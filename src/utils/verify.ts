@@ -1,3 +1,5 @@
+import { env } from "../env/server.mjs";
+
 type User = {
   twitterHandle: string
   fName: string,
@@ -15,7 +17,7 @@ export const getUserData = async (
   const userRes = await fetch(`https://api.farcaster.xyz/v2/user-by-username?username=${fName}`, {
     headers: {
       'accept': 'application/json',
-      'authorization': `Bearer ${process.env.FC_APPLICATION_BEARER_TOKEN}`
+      'authorization': `Bearer ${env.FC_APPLICATION_BEARER_TOKEN}`
     }
   });
   const user = await userRes.json();
@@ -26,7 +28,7 @@ export const getUserData = async (
   const custodyAddressRes = await fetch(`https://api.farcaster.xyz/v2/custody-address?fname=${fName}`, {
     headers: {
       'accept': 'application/json',
-      'authorization': `Bearer ${process.env.FC_APPLICATION_BEARER_TOKEN}`
+      'authorization': `Bearer ${env.FC_APPLICATION_BEARER_TOKEN}`
     }
   });
   const custodyAddressObj = await custodyAddressRes.json();
@@ -35,7 +37,7 @@ export const getUserData = async (
   const connectedAddressRes = await fetch(`https://api.farcaster.xyz/v2/verifications?fid=${fId}`, {
     headers: {
       'accept': 'application/json',
-      'authorization': `Bearer ${process.env.FC_APPLICATION_BEARER_TOKEN}`
+      'authorization': `Bearer ${env.FC_APPLICATION_BEARER_TOKEN}`
     }
   });
   const connectedAddressObj = await connectedAddressRes.json();
@@ -82,7 +84,7 @@ export const verifyOnFarcaster = async (
     const castCheckRes = await fetch(`https://api.farcaster.xyz/v2/cast?hash=${castHash}`, {
       headers: {
         'accept': 'application/json',
-        'authorization': `Bearer ${process.env.FC_APPLICATION_BEARER_TOKEN}`
+        'authorization': `Bearer ${env.FC_APPLICATION_BEARER_TOKEN}`
       }
     });
     const castCheck = await castCheckRes.json();
