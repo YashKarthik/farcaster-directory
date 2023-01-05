@@ -12,7 +12,6 @@ const checkTwitterFarcasterPair = async (twitterHandle: string, fId: number) => 
     .select('fid, twitter_username')
     .eq('fid', fId);
 
-  console.log(data);
   if (error) {
     console.log('Error in supa fetch:\n', error);
     return 'Error has occured';
@@ -32,16 +31,51 @@ export const supabaseRouter = createTRPCRouter({
       castLink: z.string().url()
     }))
     .mutation(async ({ input }) => {
-      //const castVerification = await verifyOnFarcaster(input.twitterHandle, input.fName, input.castLink);
-      //return castVerification;
       const isPaired = await checkTwitterFarcasterPair('_yashkarthik', 1600);
-      console.log(isPaired);
       if (typeof isPaired == "string") return 'Error has occured';
+
+      const castVerification = await verifyOnFarcaster(input.twitterHandle, input.fName, input.castLink);
+      if (typeof castVerification == "string") return 'Cast text does not match format.';
+
       if (isPaired == true) {
         // update instead of insert, cuz the pair exists
+        const { error } = await supabase
+          .from('directory')
+          .update({
+            fname: castVerification.user.fName,
+            custody_address: castVerification.user.custodyAddress,
+            connected_address: castVerification.user.connectedAddresses,
+            cast_timestamp: castVerification.cast.castTimestamp,
+            cast_content: castVerification.cast.castText,
+            cast_link: castVerification.cast.castLink
+          })
+          .eq('fid', castVerification.user.fId)
+          .eq('twitter_username', castVerification.user.twitterHandle);
+
+        if (error) {
+          console.log('Error while updating data:\n', error);
+          return 'Error while updating data.';
+        }
+        return 'ok'
       } else {
-        // inseart cuz the pair doesn't yet exist
+        // Insert row cuz the twitter username and FID are not yet paired.
+        const { error } = await supabase
+          .from('directory')
+          .insert({
+            fid: castVerification.user.fId,
+            fname: castVerification.user.fName,
+            twitter_username: castVerification.user.twitterHandle,
+            custody_address: castVerification.user.custodyAddress,
+            connected_address: castVerification.user.connectedAddresses,
+            cast_timestamp: castVerification.cast.castTimestamp,
+            cast_content: castVerification.cast.castText,
+            cast_link: castVerification.cast.castLink
+          });
+        if (error) {
+          console.log('Error while inserting data:\n', error);
+          return 'Error while inserting data into database.';
+        }
+        return 'ok';
       }
-      return 'ok';
     }),
 });
