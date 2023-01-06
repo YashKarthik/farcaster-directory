@@ -5,11 +5,12 @@ import { useState } from "react";
 import { z } from 'zod';
 import { api } from "../utils/api";
 
-const TwitterVerifyPage: NextPage = () => {
+const FarcasterVerifyPage: NextPage = () => {
 
-  const tweetVerificationMutation = api.verify.verifyTweet.useMutation();
+  const castVerificationMutation = api.verify.verifyCast.useMutation();
   const [ twitterHandle, setTwitterHandle ] = useState('');
   const [ fname, setFname ] = useState('');
+  const [ castLink, setCastLink ] = useState('');
   const [ lengthErr, setLengthErr ] = useState('');
 
   const checkUsernames = z.string({
@@ -30,11 +31,11 @@ const TwitterVerifyPage: NextPage = () => {
             <span className="text-[hsl(280,100%,70%)]">Farcaster Directory</span>
           </h1>
           <p className="mt-1 text-md font-medium tracking-tight">
-            Verify your Farcaster account from Twitter
+            Reverse-verify your Twitter account from Farcaster.
           </p>
         </Link>
 
-        <div className="container flex flex-col items-center justify-start gap-12 px-4 py-16 ">
+        <div className="container flex flex-col items-center justify-start gap-12 px-4 py-16">
 
           <form className="flex flex-col gap-2">
             <div className="flex md:flex-row flex-col justify-between md:max-w-md max-w-fit">
@@ -59,57 +60,66 @@ const TwitterVerifyPage: NextPage = () => {
 
             <div className="my-5 max-w-md">
               <p className="font-semibold my-3">
-                Copy and tweet the following text:
+                Copy and cast the following text:
               </p>
               <p className="my-3 p-2 max-w-sm border-solid border-2 rounded-sm border-purple-500 whitespace-normal">
-                @fc_directory Verifying my Farcaster account. Farcaster: "{fname}" Twitter: "{twitterHandle}"
+                @farcaster_directory Verifying my Farcaster account. Farcaster: "{fname}" Twitter: "{twitterHandle}"
               </p>
               <button 
                 className="bg-purple-500 font-bold rounded-sm p-1 hover:bg-purple-400"
                 onClick={(e) => {
                   e.preventDefault();
-                  navigator.clipboard.writeText(`@fc_directory Verifying my Farcaster account. Farcaster: \"${fname}\" Twitter: \"${twitterHandle}\"`);
+                  navigator.clipboard.writeText(`@farcaster_directory Verifying my Farcaster account. Farcaster: \"${fname}\" Twitter: \"${twitterHandle}\"`);
                 }}
               >
                 Copy
               </button>
 
               <p className="font-semibold my-5 ">
-                After tweeting, press the verify button so I can go check the tweet.
+                After casting, paste the cast link and press the verify button so I can go check the cast.
               </p>
 
-              <button 
-                className="bg-purple-500 font-bold rounded-sm p-1 hover:bg-purple-400"
-                onClick={(e) => {
-                  e.preventDefault();
-                  console.log('pres')
-                  if (checkUsernames.safeParse(twitterHandle).success && checkUsernames.safeParse(fname).success) {
-                    console.log('passed?')
-                    tweetVerificationMutation.mutate({
-                      twitterHandle: twitterHandle,
-                      fName: fname
-                    });
-                  } else {
-                    console.log('missed');
-                    setLengthErr('Twitter username or Farcaster username missing');
-                  }
-                }}
-              >
-                Verify Tweet
-              </button>
+              <div >
+                <input 
+                  type="url"
+                  placeholder="farcaster://casts/0x282591aadcef882bfc93a81879d86e10efc1f7d324a4c9b1dd1f4c676be5f61b/0x282591aadcef882bfc93a81879d86e10efc1f7d324a4c9b1dd1f4c676be5f61b" 
+                  onChange={e => { setCastLink(e.target.value); setLengthErr('')}} 
+                  className="my-3 mr-2 max-w-md min-w-[20ch] px-1 bg-inherit border-solid border-2 border-purple-500 rounded-sm"
+                />
+                <button 
+                  className="bg-purple-500 font-bold rounded-sm p-1 hover:bg-purple-400"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    console.log('pres')
+                    if (checkUsernames.safeParse(twitterHandle).success && checkUsernames.safeParse(fname).success) {
+                      console.log('passed?')
+                      castVerificationMutation.mutate({
+                        twitterHandle: twitterHandle,
+                        fName: fname,
+                        castLink: castLink
+                      });
+                    } else {
+                      console.log('missed');
+                      setLengthErr('Twitter username or Farcaster username or Cast link missing');
+                    }
+                  }}
+                >
+                  Verify Cast
+                </button>
+              </div>
 
               <div className="my-5 ">
-                {lengthErr != '' && (<p className="bg-red-500 bg-opacity-50">Error: {lengthErr}</p>)}
-                {tweetVerificationMutation.isLoading && (
-                  <p>Checking for verification tweet...</p>
+                {lengthErr != '' && (<p className="bg-red-500 bg-opacity-50 p-1 rounded-sm">Error: {lengthErr}</p>)}
+                {castVerificationMutation.isLoading && (
+                  <p>Checking for verification cast...</p>
                 )}
                 
-                {tweetVerificationMutation.isError && (
-                  <p className="bg-red-500 bg-opacity-50">Error: {tweetVerificationMutation.error.message}</p>
+                {castVerificationMutation.isError && (
+                  <p className="bg-red-500 bg-opacity-50 p-1 rounded-sm">Error: {castVerificationMutation.error.message}</p>
                 )}
 
-                {tweetVerificationMutation.isSuccess && (
-                  <p className="bg-green-500 bg-opacity-50">Done: {tweetVerificationMutation.data} </p>
+                {castVerificationMutation.isSuccess && (
+                  <p className="bg-green-500 bg-opacity-50 p-1 rounded-sm">Done: {castVerificationMutation.data} </p>
                 )}
 
               </div>
@@ -123,4 +133,4 @@ const TwitterVerifyPage: NextPage = () => {
   );
 };
 
-export default TwitterVerifyPage;
+export default FarcasterVerifyPage;

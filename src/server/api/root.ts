@@ -1,5 +1,4 @@
 import { createTRPCRouter } from "./trpc";
-import { example2Router } from "./routers/example2";
 import { supabaseRouter } from './routers/database';
 
 /**
@@ -9,7 +8,6 @@ import { supabaseRouter } from './routers/database';
  */
 export const appRouter = createTRPCRouter({
   verify: supabaseRouter,
-  example2: example2Router,
 });
 
 // export type definition of API

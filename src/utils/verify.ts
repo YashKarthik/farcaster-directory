@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { env } from "../env/server.mjs";
 
 type User = {
@@ -67,34 +68,32 @@ export const verifyOnFarcaster = async (
   twitterHandle: string,
   fName: string,
   castLink: string
-): Promise<VerifiedOnFarcaster|string> => {
-  try {
-    const user = await getUserData(twitterHandle, fName);
-    const cast = `@farcaster_directory Verifying my Farcaster account. Farcaster: \"${fName}\" Twitter: \"${twitterHandle}\"`;
-    const castHash = castLink.slice(85,);
-    const castCheckRes = await fetch(`https://api.farcaster.xyz/v2/cast?hash=${castHash}`, {
-      headers: {
-        'accept': 'application/json',
-        'authorization': `Bearer ${env.FC_APPLICATION_BEARER_TOKEN}`
-      }
-    });
-    const castCheck = await castCheckRes.json();
-    const castText: string = castCheck.result.cast.text;
-    const castTimestamp: Date = new Date(castCheck.result.timestamp);
-  
-    if (cast != castText) return 'Cast text does not match format';
-  
-    return {
-      user,
-      cast: {
-        castLink,
-        castText,
-        castTimestamp
-      }
+): Promise<VerifiedOnFarcaster> => {
+  const user = await getUserData(twitterHandle, fName);
+  const cast = `@farcaster_directory Verifying my Farcaster account. Farcaster: \"${fName}\" Twitter: \"${twitterHandle}\"`;
+  const castHash = castLink.slice(85,);
+  const castCheckRes = await fetch(`https://api.farcaster.xyz/v2/cast?hash=${castHash}`, {
+    headers: {
+      'accept': 'application/json',
+      'authorization': `Bearer ${env.FC_APPLICATION_BEARER_TOKEN}`
     }
-  } catch (e) {
-    console.log('ERROR in verifyOnFarcaster in verify.ts:\n', e)
-    return 'Unable to verify cast';
+  });
+  const castCheck = await castCheckRes.json();
+  const castText: string = castCheck.result.cast.text;
+  const castTimestamp: Date = new Date(castCheck.result.timestamp);
+
+  if (cast != castText) throw new TRPCError({
+    code: "PARSE_ERROR",
+    message: 'Check if cast follows specified format.'
+  })
+
+  return {
+    user,
+    cast: {
+      castLink,
+      castText,
+      castTimestamp
+    }
   }
 }
 
@@ -116,46 +115,48 @@ type Tweet = {
 export const verifyOnTwitter = async (
   twitterHandle: string,
   fName: string
-): Promise<VerifiedOnTwitter|string> => {
-  try {
-    const userData = await getUserData(twitterHandle, fName);
-    const tweetFormat = `@fc_directory Verifying my Farcaster account. Farcaster: \"${fName}\" Twitter: \"${twitterHandle}\"`;
-    const twitterUserDataRes = await fetch(`https://api.twitter.com/2/users/by/username/${twitterHandle}?user.fields=id`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${env.TWITTER_BEARER_TOKEN}`
-      }
-    });
-    const twitterUserData = await twitterUserDataRes.json();
-    const userId = twitterUserData.data.id;
-
-    const userTimelineRes = await fetch(`https://api.twitter.com/2/users/${userId}/tweets?exclude=retweets,replies&tweet.fields=created_at`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${env.TWITTER_BEARER_TOKEN}`
-      }
-    });
-    const { data }: { data: Tweet[] } = await userTimelineRes.json();
-    let verificationTweet: (VerifiedOnTwitter["tweet"]|undefined);
-
-    data.map(tweet => {
-      if (tweetFormat == tweet.text) {
-        verificationTweet = {
-          tweetLink: `https://twitter.com/${twitterHandle}/status/${tweet.id}`,
-          tweetContent: tweet.text,
-          tweetTimestamp: new Date(tweet.created_at),
-        }
-      }
-    });
-
-    if (typeof verifyOnTwitter == "undefined") return 'Could not find tweet, wait and re-try.';
-  
-    return {
-      user: userData,
-      tweet: verificationTweet!
+): Promise<VerifiedOnTwitter> => {
+  const userData = await getUserData(twitterHandle, fName);
+  const tweetFormat = `@fc_directory Verifying my Farcaster account. Farcaster: \"${fName}\" Twitter: \"${twitterHandle}\"`;
+  const twitterUserDataRes = await fetch(`https://api.twitter.com/2/users/by/username/${twitterHandle}?user.fields=id`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${env.TWITTER_BEARER_TOKEN}`
     }
-  } catch (e) {
-    console.log('ERROR in verifyOnTwitter in verify.ts:\n', e)
-    return 'Unable to verify tweet';
+  });
+  const twitterUserData = await twitterUserDataRes.json();
+  if (twitterUserData.errors) throw new TRPCError({
+    code: "NOT_FOUND",
+    message: "Check if twitter username is correct"
+  });
+  const userId = twitterUserData.data.id;
+
+  const userTimelineRes = await fetch(`https://api.twitter.com/2/users/${userId}/tweets?exclude=retweets,replies&tweet.fields=created_at`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${env.TWITTER_BEARER_TOKEN}`
+    }
+  });
+  const { data }: { data: Tweet[] } = await userTimelineRes.json();
+  let verificationTweet: (VerifiedOnTwitter["tweet"]|undefined);
+
+  data.map(tweet => {
+    if (tweetFormat == tweet.text) {
+      verificationTweet = {
+        tweetLink: `https://twitter.com/${twitterHandle}/status/${tweet.id}`,
+        tweetContent: tweet.text,
+        tweetTimestamp: new Date(tweet.created_at),
+      }
+    }
+  });
+
+  if (typeof verificationTweet == "undefined") throw new TRPCError({
+    code: 'NOT_FOUND',
+    message:  'Could not find tweet. Check if tweet follows specified format?'
+  })
+  
+  return {
+    user: userData,
+    tweet: verificationTweet!
   }
 }

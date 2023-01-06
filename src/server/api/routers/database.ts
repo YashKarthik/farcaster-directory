@@ -3,6 +3,7 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import { createClient } from '@supabase/supabase-js'
 import { verifyOnFarcaster, verifyOnTwitter } from "../../../utils/verify";
 import { env } from "../../../env/server.mjs";
+import { TRPCError } from "@trpc/server";
 
 const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
 
@@ -14,7 +15,10 @@ const checkTwitterFarcasterPair = async (twitterHandle: string, fId: number) => 
 
   if (error) {
     console.log('Error in supa fetch:\n', error);
-    return 'Error has occured';
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Database (supabase) connection error.',
+    });
   }
   if (data.length == 0) return false;
   for (let i=0; i < data.length; i++) {
@@ -30,52 +34,56 @@ export const supabaseRouter = createTRPCRouter({
       fName: z.string(),
     }))
     .mutation(async ({ input }) => {
-      const isPaired = await checkTwitterFarcasterPair('_yashkarthik', 1600);
-      if (typeof isPaired == "string") return 'Error has occured';
+    const isPaired = await checkTwitterFarcasterPair('_yashkarthik', 1600)
+    const tweetVerification = await verifyOnTwitter(input.twitterHandle, input.fName);
 
-      const tweetVerification = await verifyOnTwitter(input.twitterHandle, input.fName);
-      if (typeof tweetVerification == "string") return 'Cast text does not match format.';
+    if (isPaired == true) {
+      // update instead of insert, cuz the pair exists
+      const { error } = await supabase
+        .from('directory')
+        .update({
+          fname: tweetVerification.user.fName,
+          custody_address: tweetVerification.user.custodyAddress,
+          connected_address: tweetVerification.user.connectedAddresses,
+          tweet_timestamp: tweetVerification.tweet.tweetTimestamp,
+          tweet_content: tweetVerification.tweet.tweetContent,
+          tweet_link: tweetVerification.tweet.tweetLink
+        })
+        .eq('fid', tweetVerification.user.fId)
+        .eq('twitter_username', tweetVerification.user.twitterHandle);
 
-      if (isPaired == true) {
-        // update instead of insert, cuz the pair exists
-        const { error } = await supabase
-          .from('directory')
-          .update({
-            fname: tweetVerification.user.fName,
-            custody_address: tweetVerification.user.custodyAddress,
-            connected_address: tweetVerification.user.connectedAddresses,
-            tweet_timestamp: tweetVerification.tweet.tweetTimestamp,
-            tweet_content: tweetVerification.tweet.tweetContent,
-            tweet_link: tweetVerification.tweet.tweetLink
-          })
-          .eq('fid', tweetVerification.user.fId)
-          .eq('twitter_username', tweetVerification.user.twitterHandle);
-
-        if (error) {
-          console.log('Error while updating data:\n', error);
-          return 'Error while updating data.';
-        }
-        return 'ok'
-      } else {
-        // Insert row cuz the twitter username and FID are not yet paired.
-        const { error } = await supabase
-          .from('directory')
-          .insert({
-            fid: tweetVerification.user.fId,
-            fname: tweetVerification.user.fName,
-            twitter_username: tweetVerification.user.twitterHandle,
-            custody_address: tweetVerification.user.custodyAddress,
-            connected_address: tweetVerification.user.connectedAddresses,
-            tweet_timestamp: tweetVerification.tweet.tweetTimestamp,
-            tweet_content: tweetVerification.tweet.tweetContent,
-            tweet_link: tweetVerification.tweet.tweetLink
-          });
-        if (error) {
-          console.log('Error while inserting data:\n', error);
-          return 'Error while inserting data into database.';
-        }
-        return 'ok';
+      if (error) {
+        console.log('Error while updating data:\n', error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: 'Error while updating data'
+        });
       }
+      return 'Updated successfully.'
+    } else {
+      // Insert row cuz the twitter username and FID are not yet paired.
+      const { error } = await supabase
+        .from('directory')
+        .insert({
+          fid: tweetVerification.user.fId,
+          fname: tweetVerification.user.fName,
+          twitter_username: tweetVerification.user.twitterHandle,
+          custody_address: tweetVerification.user.custodyAddress,
+          connected_address: tweetVerification.user.connectedAddresses,
+          tweet_timestamp: tweetVerification.tweet.tweetTimestamp,
+          tweet_content: tweetVerification.tweet.tweetContent,
+          tweet_link: tweetVerification.tweet.tweetLink
+        });
+      if (error) {
+        console.log('Error while inserting data:\n', error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: 'Error while inserting data into DB'
+        });
+      }
+      return 'Data inserted successfully into directory.';
+    }
+
     }),
   verifyCast: publicProcedure
     .input(z.object({
@@ -85,10 +93,7 @@ export const supabaseRouter = createTRPCRouter({
     }))
     .mutation(async ({ input }) => {
       const isPaired = await checkTwitterFarcasterPair('_yashkarthik', 1600);
-      if (typeof isPaired == "string") return 'Error has occured';
-
       const castVerification = await verifyOnFarcaster(input.twitterHandle, input.fName, input.castLink);
-      if (typeof castVerification == "string") return 'Cast text does not match format.';
 
       if (isPaired == true) {
         // update instead of insert, cuz the pair exists
@@ -107,9 +112,12 @@ export const supabaseRouter = createTRPCRouter({
 
         if (error) {
           console.log('Error while updating data:\n', error);
-          return 'Error while updating data.';
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: 'Error while updating data in DB'
+          });
         }
-        return 'ok'
+        return 'Updated successfully.'
       } else {
         // Insert row cuz the twitter username and FID are not yet paired.
         const { error } = await supabase
@@ -126,9 +134,12 @@ export const supabaseRouter = createTRPCRouter({
           });
         if (error) {
           console.log('Error while inserting data:\n', error);
-          return 'Error while inserting data into database.';
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: 'Error while inserting data into DB'
+          });
         }
-        return 'ok';
+        return 'Data inserted successfully into directory.';
       }
     }),
 });
