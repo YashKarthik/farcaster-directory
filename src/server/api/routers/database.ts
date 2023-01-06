@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { createClient } from '@supabase/supabase-js'
-import { verifyOnFarcaster } from "../../../utils/verify";
+import { verifyOnFarcaster, verifyOnTwitter } from "../../../utils/verify";
 import { env } from "../../../env/server.mjs";
 
 const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
@@ -24,6 +24,59 @@ const checkTwitterFarcasterPair = async (twitterHandle: string, fId: number) => 
 }
 
 export const supabaseRouter = createTRPCRouter({
+  verifyTweet: publicProcedure
+    .input(z.object({
+      twitterHandle: z.string(),
+      fName: z.string(),
+    }))
+    .mutation(async ({ input }) => {
+      const isPaired = await checkTwitterFarcasterPair('_yashkarthik', 1600);
+      if (typeof isPaired == "string") return 'Error has occured';
+
+      const tweetVerification = await verifyOnTwitter(input.twitterHandle, input.fName);
+      if (typeof tweetVerification == "string") return 'Cast text does not match format.';
+
+      if (isPaired == true) {
+        // update instead of insert, cuz the pair exists
+        const { error } = await supabase
+          .from('directory')
+          .update({
+            fname: tweetVerification.user.fName,
+            custody_address: tweetVerification.user.custodyAddress,
+            connected_address: tweetVerification.user.connectedAddresses,
+            tweet_timestamp: tweetVerification.tweet.tweetTimestamp,
+            tweet_content: tweetVerification.tweet.tweetContent,
+            tweet_link: tweetVerification.tweet.tweetLink
+          })
+          .eq('fid', tweetVerification.user.fId)
+          .eq('twitter_username', tweetVerification.user.twitterHandle);
+
+        if (error) {
+          console.log('Error while updating data:\n', error);
+          return 'Error while updating data.';
+        }
+        return 'ok'
+      } else {
+        // Insert row cuz the twitter username and FID are not yet paired.
+        const { error } = await supabase
+          .from('directory')
+          .insert({
+            fid: tweetVerification.user.fId,
+            fname: tweetVerification.user.fName,
+            twitter_username: tweetVerification.user.twitterHandle,
+            custody_address: tweetVerification.user.custodyAddress,
+            connected_address: tweetVerification.user.connectedAddresses,
+            tweet_timestamp: tweetVerification.tweet.tweetTimestamp,
+            tweet_content: tweetVerification.tweet.tweetContent,
+            tweet_link: tweetVerification.tweet.tweetLink
+          });
+        if (error) {
+          console.log('Error while inserting data:\n', error);
+          return 'Error while inserting data into database.';
+        }
+        return 'ok';
+      }
+    }),
   verifyCast: publicProcedure
     .input(z.object({
       twitterHandle: z.string(),

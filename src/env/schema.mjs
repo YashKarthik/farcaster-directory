@@ -7,12 +7,13 @@ import { z } from "zod";
  */
 export const serverSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]),
-  ALCHEMY_API_KEY: z.string(),
   FC_APPLICATION_BEARER_TOKEN: z.string(),
   SUPABASE_URL: z.string().url(),
   SUPABASE_ANON_KEY: z.string(),
-});
-
+  TWITTER_API_KEY: z.string(),
+  TWITTER_API_SECRET: z.string(),
+  TWITTER_BEARER_TOKEN: z.string()
+})
 /**
  * Specify your client-side environment variables schema here.
  * This way you can ensure the app isn't built with invalid env vars.
