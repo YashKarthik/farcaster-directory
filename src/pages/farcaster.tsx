@@ -90,16 +90,13 @@ const FarcasterVerifyPage: NextPage = () => {
                   className="bg-purple-500 font-bold rounded-sm p-1 hover:bg-purple-400"
                   onClick={(e) => {
                     e.preventDefault();
-                    console.log('pres')
                     if (checkUsernames.safeParse(twitterHandle).success && checkUsernames.safeParse(fname).success) {
-                      console.log('passed?')
                       castVerificationMutation.mutate({
                         twitterHandle: twitterHandle,
                         fName: fname,
                         castLink: castLink
                       });
                     } else {
-                      console.log('missed');
                       setLengthErr('Twitter username or Farcaster username or Cast link missing');
                     }
                   }}

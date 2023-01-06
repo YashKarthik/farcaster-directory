@@ -27,7 +27,7 @@ const checkTwitterFarcasterPair = async (twitterHandle: string, fId: number) => 
   return false;
 }
 
-export const supabaseRouter = createTRPCRouter({
+export const supabaseWriteRouter = createTRPCRouter({
   verifyTweet: publicProcedure
     .input(z.object({
       twitterHandle: z.string(),

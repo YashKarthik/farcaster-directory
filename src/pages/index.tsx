@@ -1,10 +1,36 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
+import { useMemo } from "react";
+
+import { useTable } from 'react-table';
 
 import { api } from "../utils/api";
 
 const Home: NextPage = () => {
+  
+  //const data = useMemo(() => {
+  //  const queryBasicData = api.fetchData.fetchBasicData.useQuery();
+  //  return queryBasicData.data;
+  //}, []);
+
+  //const columns = useMemo(() => [
+  //  {
+  //    Header: 'Twitter Username',
+  //    accessor: 'twitter_username'
+  //  },
+  //  {
+  //    Header: 'Farcaster Username',
+  //    accessor: 'fname'
+  //  },
+  //  {
+  //    Header: 'Farcaster Id',
+  //    accessor: 'fid'
+  //  },
+  //], []);
+
+  //const tableInstance = useTable({ columns, data })
+
   return (
     <>
       <Head>
@@ -22,7 +48,6 @@ const Home: NextPage = () => {
             <p className="mt-1 text-2xl font-medium tracking-tight">
               Find your Twitter friends on Farcaster!
             </p>
-
           </div>
 
           <div className="flex flex-col items-center justify-start">
@@ -30,16 +55,17 @@ const Home: NextPage = () => {
               Add your Farcaster account to the directory so your followers 
               can easily find you.
             </p>
+
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-8">
               <Link href="/twitter" className="bg-blue-500 font-bold rounded-md p-5 hover:bg-blue-400">
                 Verify on Twitter
               </Link>
-
               <Link href="/farcaster" className="bg-purple-500 font-bold rounded-md p-5 hover:bg-purple-400">
                 Verify on Farcaster
               </Link>
             </div>
           </div>
+
         </div>
       </main>
     </>
