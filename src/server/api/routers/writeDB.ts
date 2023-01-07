@@ -21,8 +21,8 @@ const checkTwitterFarcasterPair = async (twitterHandle: string, fId: number) => 
     });
   }
   if (data.length == 0) return false;
-  for (let i=0; i < data.length; i++) {
-    if (data[i]!.fid == fId && data[i]!.twitter_username == twitterHandle) return true;
+  for (let i=0; i < data!.length; i++) {
+    if (data![i]!.fid == fId && data![i]!.twitter_username == twitterHandle) return true;
   }
   return false;
 }

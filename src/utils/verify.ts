@@ -60,7 +60,7 @@ type VerifiedOnFarcaster = {
   cast: {
     castLink: string,
     castText: string,
-    castTimestamp: Date
+    castTimestamp: string
   }
 }
 
@@ -70,7 +70,7 @@ export const verifyOnFarcaster = async (
   castLink: string
 ): Promise<VerifiedOnFarcaster> => {
   const user = await getUserData(twitterHandle, fName);
-  const cast = `@farcaster_directory Verifying my Farcaster account. Farcaster: \"${fName}\" Twitter: \"${twitterHandle}\"`;
+  const cast = `@directory Verifying my Farcaster account. Farcaster: \"${fName}\" Twitter: \"${twitterHandle}\"`;
   const castHash = castLink.slice(85,);
   const castCheckRes = await fetch(`https://api.farcaster.xyz/v2/cast?hash=${castHash}`, {
     headers: {
@@ -80,7 +80,7 @@ export const verifyOnFarcaster = async (
   });
   const castCheck = await castCheckRes.json();
   const castText: string = castCheck.result.cast.text;
-  const castTimestamp: Date = new Date(castCheck.result.timestamp);
+  const castTimestamp: string = castCheck.result.cast.timestamp;
 
   if (cast != castText) throw new TRPCError({
     code: "PARSE_ERROR",
@@ -102,7 +102,7 @@ type VerifiedOnTwitter = {
   tweet: {
     tweetLink: string,
     tweetContent: string,
-    tweetTimestamp: Date
+    tweetTimestamp: string
   }
 }
 
@@ -131,7 +131,7 @@ export const verifyOnTwitter = async (
   });
   const userId = twitterUserData.data.id;
 
-  const userTimelineRes = await fetch(`https://api.twitter.com/2/users/${userId}/tweets?exclude=retweets,replies&tweet.fields=created_at`, {
+  const userTimelineRes = await fetch(`https://api.twitter.com/2/users/${userId}/tweets?tweet.fields=created_at`, {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${env.TWITTER_BEARER_TOKEN}`
@@ -145,7 +145,7 @@ export const verifyOnTwitter = async (
       verificationTweet = {
         tweetLink: `https://twitter.com/${twitterHandle}/status/${tweet.id}`,
         tweetContent: tweet.text,
-        tweetTimestamp: new Date(tweet.created_at),
+        tweetTimestamp: tweet.created_at,
       }
     }
   });
