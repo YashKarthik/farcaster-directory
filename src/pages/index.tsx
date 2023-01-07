@@ -55,10 +55,8 @@ const Home: NextPage = () => {
     }),
   ];
 
-  /**
-   * @ts-ignore
-   * */
   const table = useReactTable({
+    // @ts-ignore shut up. Im right
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
