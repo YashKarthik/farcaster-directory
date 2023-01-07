@@ -49,6 +49,10 @@ const Home: NextPage = () => {
       cell: (info) => info.row.getValue('tweet_timestamp') ? 'Verified' : 'Unverified',
       header: () => <span>Verified from Twitter?</span>,
     }),
+    columnHelper.accessor("fid", {
+      cell: (info) => <Link href={"/profile/" + info.getValue()}>Open Profile</Link>,
+      header: () => <span>Profile</span>,
+    }),
   ];
 
   /**

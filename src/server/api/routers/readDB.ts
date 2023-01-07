@@ -62,4 +62,28 @@ export const supabaseReadRouter = createTRPCRouter({
       }
       return count;
     }),
+
+  fetchUser: publicProcedure
+    .input(
+      z.object({
+        fid: z.number()
+      })
+    )
+    .query(async ({ input }) => {
+
+      const { data, error } = await supabase
+        .from('directory')
+        .select('*')
+        .eq('fid', input.fid)
+
+      if (error) {
+        console.log('Error in supa fetch readDB.ts:\n', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Error while fetching data from Supabase.'
+        });
+      }
+      Users.parse(data);
+      return data as z.infer<typeof Users>;
+    }),
 });
