@@ -7,11 +7,11 @@ import { TRPCError } from "@trpc/server";
 
 const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
 
-const checkTwitterFarcasterPair = async (twitterHandle: string, fId: number) => {
+const checkTwitterFarcasterPair = async (twitterHandle: string, fname: string) => {
   const { data, error } = await supabase
     .from('directory')
-    .select('fid, twitter_username')
-    .eq('fid', fId);
+    .select('fname, twitter_username')
+    .eq('fname', fname);
 
   if (error) {
     console.log('Error in supa fetch:\n', error);
@@ -22,7 +22,7 @@ const checkTwitterFarcasterPair = async (twitterHandle: string, fId: number) => 
   }
   if (data.length == 0) return false;
   for (let i=0; i < data!.length; i++) {
-    if (data![i]!.fid == fId && data![i]!.twitter_username == twitterHandle) return true;
+    if (data![i]!.fname == fname && data![i]!.twitter_username == twitterHandle) return true;
   }
   return false;
 }
@@ -34,7 +34,7 @@ export const supabaseWriteRouter = createTRPCRouter({
       fName: z.string(),
     }))
     .mutation(async ({ input }) => {
-    const isPaired = await checkTwitterFarcasterPair('_yashkarthik', 1600)
+    const isPaired = await checkTwitterFarcasterPair(input.twitterHandle, input.fName)
     const tweetVerification = await verifyOnTwitter(input.twitterHandle, input.fName);
 
     if (isPaired == true) {
@@ -92,7 +92,7 @@ export const supabaseWriteRouter = createTRPCRouter({
       castLink: z.string().url()
     }))
     .mutation(async ({ input }) => {
-      const isPaired = await checkTwitterFarcasterPair('_yashkarthik', 1600);
+      const isPaired = await checkTwitterFarcasterPair(input.twitterHandle, input.fName);
       const castVerification = await verifyOnFarcaster(input.twitterHandle, input.fName, input.castLink);
 
       if (isPaired == true) {
