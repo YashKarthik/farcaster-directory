@@ -63,6 +63,7 @@ const Home: NextPage = () => {
                     <a 
                       className="mt-3 text-purple-400"
                       target="_blank"
+                      rel="noreferrer"
                       href={'https:/phrasetown.com/cast/' + queryBasicData.data[0].cast_link!.slice(85,)}
                     >
                       View cast in Phrasetown
@@ -79,6 +80,7 @@ const Home: NextPage = () => {
                     <a 
                       className="mt-3 text-purple-400"
                       target="_blank"
+                      rel="noreferrer"
                       href={queryBasicData.data[0].tweet_link as string}
                     >
                       View verification Tweet

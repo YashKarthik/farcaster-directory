@@ -63,7 +63,7 @@ const FarcasterVerifyPage: NextPage = () => {
                 Copy and cast the following text:
               </p>
               <p className="my-3 p-2 max-w-sm border-solid border-2 rounded-sm border-purple-500 whitespace-normal">
-                @directory Verifying my Farcaster account. Farcaster: "{fname}" Twitter: "{twitterHandle}"
+                @directory Verifying my Farcaster account. Farcaster: &quot;{fname}&quot; Twitter: &quot;{twitterHandle}&quot;
               </p>
               <button 
                 className="bg-purple-500 font-bold rounded-sm p-1 hover:bg-purple-400"

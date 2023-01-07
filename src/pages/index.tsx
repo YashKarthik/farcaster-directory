@@ -56,7 +56,7 @@ const Home: NextPage = () => {
   ];
 
   const table = useReactTable({
-    // @ts-ignore shut up. Im right
+    // @ts-expect-error: Data maybe undefined
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
