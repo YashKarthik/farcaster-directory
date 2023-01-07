@@ -182,7 +182,7 @@ const Home: NextPage = () => {
 
           <a
             className="font-mono" 
-            href="https://github.com/yashkarthik/skimmr"
+            href="https://github.com/yashkarthik/farcaster-directory"
             target="_blank"
             rel="noreferrer"
           >
