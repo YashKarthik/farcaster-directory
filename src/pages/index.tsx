@@ -184,6 +184,7 @@ const Home: NextPage = () => {
             className="font-mono" 
             href="https://github.com/yashkarthik/skimmr"
             target="_blank"
+            rel="noreferrer"
           >
             GitHub
           </a>
@@ -191,6 +192,7 @@ const Home: NextPage = () => {
           <a
             href="https://www.buymeacoffee.com/yashkarthik" 
             target="_blank"
+            rel="noreferrer"
             className="border-2 rounded-md border-white max-w-[10ch]"
           >
             <Image 
