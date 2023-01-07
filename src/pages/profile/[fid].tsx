@@ -64,7 +64,7 @@ const Home: NextPage = () => {
                       className="mt-3 text-purple-400"
                       target="_blank"
                       rel="noreferrer"
-                      href={'https:/phrasetown.com/cast/' + queryBasicData.data[0].cast_link!.slice(85,)}
+                      href={queryBasicData.data[0].cast_link!}
                     >
                       View cast in Phrasetown
                     </a>
