@@ -10,7 +10,15 @@ const cors = Cors({
   methods: "GET"
 });
 
-const corsMiddleware = (req: NextApiRequest, res: NextApiResponse, fn: Function) => {
+const corsMiddleware = (
+  req: NextApiRequest,
+  res: NextApiResponse,
+  fn: (
+    req: NextApiRequest,
+    res: NextApiResponse,
+    result: any
+  ) => void
+) => {
   return new Promise((resolve, reject) => {
     fn(req, res, (result: any) => {
       if (result instanceof Error) {

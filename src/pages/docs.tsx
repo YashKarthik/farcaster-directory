@@ -55,7 +55,7 @@ const DocsPage: NextPage = () => {
               {'{'} <br/> &nbsp; message: &apos;Internal server error&apos; <br/> {'}'}
               <hr className="my-3 border-gray-700"/>
               {'{'} <br/>
-                &nbsp; "issues": [ <br/>
+                &nbsp; &quot;issues&quot;: [ <br/>
                 &nbsp; {'{'} <br/>
                     &nbsp;&nbsp; &quot;code&quot;: &quot;invalid_type&quot;, <br/>
                     &nbsp;&nbsp; &quot;expected&quot;: &quot;number&quot;, <br/>
