@@ -1,12 +1,12 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { createClient, PostgrestResponse } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js'
 import { env } from "../../../env/server.mjs";
 import { TRPCError } from "@trpc/server";
 
 const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
 
-const Users = z.object({
+const BasicUsersData = z.object({
   fid: z.number(),
   fname: z.string().min(1),
   twitter_username: z.string().min(3),
@@ -18,23 +18,27 @@ const Users = z.object({
   tweet_link: z.string().url().optional().nullable(),
 }).array();
 
+const Users = z.object({
+  fid: z.number(),
+  fname: z.string().min(1),
+  twitter_username: z.string().min(3),
+  cast_timestamp: z.string().nullable(),
+  tweet_timestamp: z.string().nullable(),
+  cast_content: z.string().nullable(),
+  tweet_content: z.string().nullable(),
+  cast_link: z.string().url().nullable(),
+  tweet_link: z.string().url().nullable(),
+  custody_address: z.string(),
+  connected_address: z.string().array(),
+}).array();
+
 export const supabaseReadRouter = createTRPCRouter({
   fetchBasicData: publicProcedure
-    .input(
-      z.object({
-        fid: z.number()
-      })
-      .optional(),
-    )
-    .query(async ({ input }) => {
+    .query(async () => {
 
-      let query = supabase
+      const { data, error } = await supabase
         .from('directory')
-        .select('fid, fname, twitter_username, cast_timestamp, tweet_timestamp')
-
-      if (input?.fid) query = query.eq('fid', input.fid);
-
-      const { data, error } = await query;
+        .select('fid, fname, twitter_username, cast_timestamp, tweet_timestamp');
 
       if (error) {
         console.log('Error in supa fetch readDB.ts:\n', error);
@@ -43,8 +47,8 @@ export const supabaseReadRouter = createTRPCRouter({
           message: 'Error while fetching data from Supabase.'
         });
       }
-      Users.parse(data);
-      return data as z.infer<typeof Users>;
+      BasicUsersData.parse(data);
+      return data as z.infer<typeof BasicUsersData>;
     }),
 
   fetchCount: publicProcedure

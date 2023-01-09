@@ -3,6 +3,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { z } from 'zod';
 
 import { api } from "../../utils/api";
 
@@ -10,13 +11,14 @@ const Home: NextPage = () => {
 
   const nextRouter = useRouter();
   const [ fid, setFid ] = useState(0);
+  const CheckFIDFormat = z.coerce.number();
 
   useEffect(() => {
     if (nextRouter.isReady) {
       const { fid } = nextRouter.query;
       try {
-        const fidNum = parseInt(fid as string);
-        setFid(fidNum);
+        const FID = CheckFIDFormat.parse(fid);
+        setFid(FID);
       } catch {
         nextRouter.push('/')
       }
@@ -47,14 +49,32 @@ const Home: NextPage = () => {
           {queryBasicData.isLoading && <p>Fetching user profile</p>}
           {queryBasicData.isError && <p>Error while fetching user profile: {queryBasicData.error.message}</p>}
           {queryBasicData.isSuccess && (
+            queryBasicData.data[0]?.twitter_username || queryBasicData.data[0]?.cast_timestamp ? (
             <div>
-              <p>Farcaster name (FNAME): {queryBasicData.data[0]?.fname} </p>
-              <p>Farcaster ID (FID): {queryBasicData.data[0]?.fid} </p>
-              <p>Twitter username: {queryBasicData.data[0]?.twitter_username} </p>
+              <div className="flex flex-row gap-1">
+                <p className="font-semibold text-purple-400">Farcaster name (FNAME):</p>
+                <p>{queryBasicData.data[0]?.fname}</p>
+              </div>
+              <div className="flex flex-row gap-1">
+                <p className="font-semibold text-purple-400">Farcaster ID (FId):</p>
+                <p>{queryBasicData.data[0]?.fid}</p>
+              </div>
+              <div className="flex flex-row gap-1">
+                <p className="font-semibold text-purple-400">Twitter useranme:</p>
+                <p>{queryBasicData.data[0]?.twitter_username}</p>
+              </div>
+              <div className="flex flex-row gap-1">
+                <p className="font-semibold text-purple-400">Custody address:</p>
+                <p className="font-mono">{queryBasicData.data[0]?.custody_address}</p>
+              </div>
+              <div className="flex flex-row gap-1">
+                <p className="font-semibold text-purple-400">Connected address:</p>
+                <p className="font-mono">{queryBasicData.data[0]?.connected_address}</p>
+              </div>
 
-              <div className="grid grid-cols-2 gap-5 mt-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
 
-                {queryBasicData.data[0]?.cast_timestamp && (
+                {queryBasicData.data[0]?.cast_timestamp ? (
                   <div className="max-w-[35ch]">
                     <p className="mt-5 mb-1">Verification cast:</p>
                     <p className="p-2 border-solid border-2 border-purple-500 rounded-sm">
@@ -64,14 +84,18 @@ const Home: NextPage = () => {
                       className="mt-3 text-purple-400"
                       target="_blank"
                       rel="noreferrer"
-                      href={queryBasicData.data[0].cast_link!}
+                      href={`https://phrasetown.com/cast/${queryBasicData.data[0].cast_link!.slice(85,)}`}
                     >
                       View cast in Phrasetown
                     </a>
                   </div>
+                ):(
+                  <div>
+                    User has not reverse-verified their Twitter username.
+                  </div>
                 )}
 
-                {queryBasicData.data[0]?.tweet_timestamp && (
+                {queryBasicData.data[0]?.tweet_timestamp ? (
                   <div className="max-w-[35ch]">
                     <p className="mt-5 mb-1">Verification tweet:</p>
                     <p className="p-2 border-solid border-2 border-purple-500 rounded-sm">
@@ -86,11 +110,16 @@ const Home: NextPage = () => {
                       View verification Tweet
                     </a>
                   </div>
-
+                ):(
+                  <div>
+                    User has not verified their Farcaster username.
+                  </div>
                 )}
               </div>
             </div>
-          )}
+            ):(
+              <p>User with FID {fid} not registered</p>
+            ))}
         </div>
       </main>
     </>
