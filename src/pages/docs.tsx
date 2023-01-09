@@ -27,7 +27,7 @@ const DocsPage: NextPage = () => {
             <p className="font-semibold text-purple-400">Endpoint url:</p>
             <p className="font-mono">directory.yashkarthik.xyz/api/read-user/:fid</p>
           </div>
-          <p className="">Where FID is the user's fid</p>
+          <p>Where FID is the user&apos;s fid</p>
           <div className="flex flex-col gap-2">
             <p className="font-semibold text-purple-400">Response shape:</p>
             <p className="text-purple-400">Response for valid input:</p>
@@ -50,21 +50,21 @@ const DocsPage: NextPage = () => {
 
             <p className="text-purple-400">Possible responses when error:</p>
             <div className="font-mono ml-3">
-              {'{'} <br/> &nbsp; message: 'User FID not registered.'; <br/> {'}'}
+              {'{'} <br/> &nbsp; message: &apos;User FID not registered.&apos; <br/> {'}'}
               <hr className="my-3 border-gray-700"/>
-              {'{'} <br/> &nbsp; message: 'Internal server error'; <br/> {'}'}
+              {'{'} <br/> &nbsp; message: &apos;Internal server error&apos; <br/> {'}'}
               <hr className="my-3 border-gray-700"/>
               {'{'} <br/>
                 &nbsp; "issues": [ <br/>
                 &nbsp; {'{'} <br/>
-                    &nbsp;&nbsp; "code": "invalid_type", <br/>
-                    &nbsp;&nbsp; "expected": "number", <br/>
-                    &nbsp;&nbsp; "received": "nan", <br/>
-                    &nbsp;&nbsp; "path": [], <br/>
-                    &nbsp;&nbsp; "message": "Expected number, received nan" <br/>
+                    &nbsp;&nbsp; &quot;code&quot;: &quot;invalid_type&quot;, <br/>
+                    &nbsp;&nbsp; &quot;expected&quot;: &quot;number&quot;, <br/>
+                    &nbsp;&nbsp; &quot;received&quot;: &quot;nan&quot;, <br/>
+                    &nbsp;&nbsp; &quot;path&quot;: [], <br/>
+                    &nbsp;&nbsp; &quot;message&quot;: &quot;Expected number, received nan&quot; <br/>
                 &nbsp; {'}'} <br/>
                 &nbsp; ], <br/>
-                &nbsp; "name": "ZodError" <br/>
+                &nbsp; &quot;name&quot;: &quot;ZodError&quot; <br/>
               {'}'}
             </div>
           </div>
