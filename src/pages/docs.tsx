@@ -77,7 +77,7 @@ const DocsPage: NextPage = () => {
               - The `id` has no meaning with repect to the protocol, it&quot;s just the database primary key.
             </p>
             <p>
-              - Unique properties? None of the props are unique to a single row. The same FID may be "owned" by different twitter users, and vice versa. Hence the array response.
+              - Unique properties? None of the props are unique to a single row. The same FID may be &quot;owned&quot; by different twitter users, and vice versa. Hence the array response.
             </p>
             <p>
               - Create an <a className="text-purple-400" target="_blank" rel="noreferrer" href="https://github.com/yashkarthik/farcaster-directory">issue</a> if you need other endpoints.
