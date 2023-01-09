@@ -1,28 +1,38 @@
-# Create T3 App
+# [Farcaster Directory](https://directory.yashkarthik.xyz)
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+A directory of Farcaster accounts and their respective Twitter accounts, making it easy find your
+Twitter friends on Farcaster.
 
-## What's next? How do I make an app with this?
+Head to [directory.yashkarthik.xyz](https://directory.yashkarthik.xyz) to add yourself to the
+directory.
+## API
+Endpoint: `https://directory.yashkarthik.xyz/api/read-users/:fid`
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+Where FID is the user's Farcaster ID.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+Response shape (if no errors):
+```
+{
+  id:                number;
+  fid:               number;
+  fname:             string;
+  twitter_username:  string;
+  custody_address:   string;
+  connected_address: string[];
+  cast_timestamp:    string|null;
+  tweet_timestamp:   Date;
+  cast_content:      string|null;
+  tweet_content:     string|null;
+  cast_link:         string|null;
+  tweet_link:        string|null;
+}[]
+```
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- Either the cast params (timestamp, content, link) or the tweet params may be null, but not both.
+- The `id` has no meaning with repect to the protocol, it's just the database primary key.
+- Unique properties? None of the props are unique to a single row. The same FID may be "owned" by
+different twitter users, and vice versa. Hence the array response.
 
-## Learn More
+- Create an issue if you need other endpoints.
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
-
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
-
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
-
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+###### Bootstrapped with [create-t3-app](https://create.t3.gg/).

@@ -39,13 +39,13 @@ const DocsPage: NextPage = () => {
                 &nbsp; twitter_username:  string; <br/>
                 &nbsp; custody_address:   string; <br/>
                 &nbsp; connected_address: string[]; <br/>
-                &nbsp; cast_timestamp:    null; <br/>
+                &nbsp; cast_timestamp:    string|null; <br/>
                 &nbsp; tweet_timestamp:   Date; <br/>
-                &nbsp; cast_content:      null; <br/>
-                &nbsp; tweet_content:     string; <br/>
-                &nbsp; cast_link:         null; <br/>
-                &nbsp; tweet_link:        string; <br/>
-              {'}'}
+                &nbsp; cast_content:      string|null; <br/>
+                &nbsp; tweet_content:     string|null; <br/>
+                &nbsp; cast_link:         string|null; <br/>
+                &nbsp; tweet_link:        string|null; <br/>
+              {'}'}[]
             </div>
 
             <p className="text-purple-400">Possible responses when error:</p>
@@ -67,6 +67,22 @@ const DocsPage: NextPage = () => {
                 &nbsp; &quot;name&quot;: &quot;ZodError&quot; <br/>
               {'}'}
             </div>
+
+            <hr/>
+
+            <p>
+              - Either the cast params (timestamp, content, link) or the tweet params may be null, but not both.
+            </p>
+            <p>
+              - The `id` has no meaning with repect to the protocol, it&quot;s just the database primary key.
+            </p>
+            <p>
+              - Unique properties? None of the props are unique to a single row. The same FID may be "owned" by different twitter users, and vice versa. Hence the array response.
+            </p>
+            <p>
+              - Create an <a className="text-purple-400" target="_blank" rel="noreferrer" href="https://github.com/yashkarthik/farcaster-directory">issue</a> if you need other endpoints.
+            </p>
+
           </div>
         </div>
       </main>

@@ -42,7 +42,7 @@ const fetchByFID = async (req: NextApiRequest, res: NextApiResponse) => {
     const FID = CheckFIDFormat.parse(fid);
     const user = await caller.fetchData.fetchUser({fid: FID})
     if (user.length == 0) return res.status(404).json({ message: 'User FID not registered'});
-    return res.status(200).json(user[0]);
+    return res.status(200).json(user);
   } catch (cause) {
     if (cause instanceof TRPCError) {
       const httpCode = getHTTPStatusCodeFromError(cause);
