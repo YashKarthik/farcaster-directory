@@ -175,7 +175,7 @@ const Home: NextPage = () => {
             </div>
           </div>
         </div>
-        <footer className="mb-0 items-center p-4 mt-40 border-t-2 border-dashed border-slate-300 grid grid-cols-3 gap-7 md:place-self-center md:justify-self-end">
+        <footer className="mb-0 items-center justify-items-center p-4 border-t-2 border-dashed border-slate-300 grid grid-cols-4 gap-7">
           <a className="font-mono" href="farcaster://profiles/1600">
             yashkarthik
           </a>
@@ -188,6 +188,13 @@ const Home: NextPage = () => {
           >
             GitHub
           </a>
+
+          <Link
+            className="font-mono" 
+            href="/docs"
+          >
+            API
+          </Link>
 
           <a
             href="https://www.buymeacoffee.com/yashkarthik" 

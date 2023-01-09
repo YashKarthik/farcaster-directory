@@ -33,8 +33,8 @@ const fetchByFID = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const FID = CheckFIDFormat.parse(fid);
     const user = await caller.fetchData.fetchUser({fid: FID})
-    if (user.length == 0) res.status(404).json({ message: 'User FID not registered'});
-    else res.status(200).json(user);
+    if (user.length == 0) return res.status(404).json({ message: 'User FID not registered'});
+    return res.status(200).json(user[0]);
   } catch (cause) {
     if (cause instanceof TRPCError) {
       const httpCode = getHTTPStatusCodeFromError(cause);
@@ -45,7 +45,7 @@ const fetchByFID = async (req: NextApiRequest, res: NextApiResponse) => {
     }
     // Another error occured
     console.error(cause);
-    res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
