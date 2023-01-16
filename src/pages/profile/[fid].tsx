@@ -30,9 +30,20 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Farcaster Directory / Profile</title>
-        <meta name="description" content="User profile for fid." />
-        <link rel="icon" href="/favicon.svg" />
+        <title>{fid}&lsquo; in Farcaster Directory</title>
+        <meta name="description" content={"Farcaster Directory profile for fid:" + fid} />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="description" content={"Farcaster Directory profile for fid:" + fid}/>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <meta name="robots" content="all" />
+        <meta name="og:title" content="Farcaster Directory" />
+        <meta name="og:description" content={"Farcaster Directory profile for fid:" + fid}/>
+        <meta name="og:type" content="profile" />
+        <meta name="og:image" content="https://directory.yashkarthik.xyz/ogImage.png" />
+        <meta name="og:url" content="https://directory.yashkarthik.xyz" />
+        <meta name="twitter:site" content="@_yashKarthik" />
       </Head>
       <main className="text-white flex min-h-screen flex-col items-center justify-start bg-gradient-to-b from-[#2e026d] to-[#15162c]">
 
