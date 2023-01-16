@@ -35,4 +35,11 @@ different twitter users, and vice versa. Hence the array response.
 
 - Create an issue if you need other endpoints.
 
+## Development roadmap (?)
+_More like cool ideas that I wanna try out_
+
+- Instead of a table on the front page. Display a social graph. Literally. Something like the graph
+view in note-taking apps like [Obsidian.md](https://help.obsidian.md/Plugins/Graph+view), but for
+visualizing who-follows-who and stuff.
+
 ###### Bootstrapped with [create-t3-app](https://create.t3.gg/).
