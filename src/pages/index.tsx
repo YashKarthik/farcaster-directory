@@ -24,7 +24,7 @@ const Home: NextPage = () => {
     fid: number;
     fname: string;
     twitter_username: string;
-    cast_timestamp: string|undefined;
+    cast_timestamp?: string|undefined;
     tweet_timestamp?: string|undefined;
   }
   const columnHelper = createColumnHelper<User>();
@@ -66,11 +66,19 @@ const Home: NextPage = () => {
     <>
       <Head>
         <title>Farcaster Directory</title>
-        <meta
-          name="description"
-          content="Find your Twitter friends on Farcaster."
-        />
         <link rel="icon" href="/favicon.svg" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="description" content="Find your Twitter friends on Farcaster. A directory mapping Farcaster accounts to their respective Twitter accounts." />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <meta name="robots" content="all" />
+        <meta name="og:title" content="Farcaster Directory" />
+        <meta name="og:description" content="Find your Twitter friends on Farcaster. A directory mapping Farcaster accounts to their respective Twitter accounts." />
+        <meta name="og:type" content="profile" />
+        <meta name="og:image" content="https://directory.yashkarthik.xyz/ogImage.png" />
+        <meta name="og:url" content="https://directory.yashkarthik.xyz" />
+        <meta name="twitter:site" content="@_yashKarthik" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-start bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
         <div className="container flex flex-col items-center justify-start gap-12 px-4 py-16 ">
