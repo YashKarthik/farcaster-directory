@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { createClient } from '@supabase/supabase-js'
-import { verifyOnFarcaster, verifyOnTwitter } from "../../../utils/verify";
+import { verifyOnFarcaster, verifyOnTwitter, updateFollowers } from "../../../utils/verify";
 import { env } from "../../../env/server.mjs";
 import { TRPCError } from "@trpc/server";
 
@@ -27,6 +27,10 @@ const checkTwitterFarcasterPair = async (twitterHandle: string, fname: string) =
   return false;
 }
 
+function delay(milliseconds : number) {
+  return new Promise(resolve => setTimeout( resolve, milliseconds));
+}
+
 export const supabaseWriteRouter = createTRPCRouter({
   verifyTweet: publicProcedure
     .input(z.object({
@@ -47,7 +51,9 @@ export const supabaseWriteRouter = createTRPCRouter({
           connected_address: tweetVerification.user.connectedAddresses,
           tweet_timestamp: tweetVerification.tweet.tweetTimestamp,
           tweet_content: tweetVerification.tweet.tweetContent,
-          tweet_link: tweetVerification.tweet.tweetLink
+          tweet_link: tweetVerification.tweet.tweetLink,
+          twitter_id: tweetVerification.user.twitterID,
+          farcaster_followers_fid: tweetVerification.user.farcasterFollowersFID,
         })
         .eq('fid', tweetVerification.user.fId)
         .eq('twitter_username', tweetVerification.user.twitterHandle);
@@ -72,7 +78,9 @@ export const supabaseWriteRouter = createTRPCRouter({
           connected_address: tweetVerification.user.connectedAddresses,
           tweet_timestamp: tweetVerification.tweet.tweetTimestamp,
           tweet_content: tweetVerification.tweet.tweetContent,
-          tweet_link: tweetVerification.tweet.tweetLink
+          tweet_link: tweetVerification.tweet.tweetLink,
+          twitter_id: tweetVerification.user.twitterID,
+          farcaster_followers_fid: tweetVerification.user.farcasterFollowersFID,
         });
       if (error) {
         console.log('Error while inserting data:\n', error);
@@ -105,7 +113,9 @@ export const supabaseWriteRouter = createTRPCRouter({
             connected_address: castVerification.user.connectedAddresses,
             cast_timestamp: castVerification.cast.castTimestamp,
             cast_content: castVerification.cast.castText,
-            cast_link: castVerification.cast.castLink
+            cast_link: castVerification.cast.castLink,
+            twitter_id: castVerification.user.twitterID,
+            farcaster_followers_fid: castVerification.user.farcasterFollowersFID,
           })
           .eq('fid', castVerification.user.fId)
           .eq('twitter_username', castVerification.user.twitterHandle);
@@ -130,7 +140,9 @@ export const supabaseWriteRouter = createTRPCRouter({
             connected_address: castVerification.user.connectedAddresses,
             cast_timestamp: castVerification.cast.castTimestamp,
             cast_content: castVerification.cast.castText,
-            cast_link: castVerification.cast.castLink
+            cast_link: castVerification.cast.castLink,
+            twitter_id: castVerification.user.twitterID,
+            farcaster_followers_fid: castVerification.user.farcasterFollowersFID,
           });
         if (error) {
           console.log('Error while inserting data:\n', error);
@@ -141,5 +153,35 @@ export const supabaseWriteRouter = createTRPCRouter({
         }
         return 'Data inserted successfully into directory.';
       }
+    }),
+
+  updateFollowers: publicProcedure
+    .mutation(async () => {
+      const { data, error } = await supabase
+        .from('directory')
+        .select('id, fid, twitter_id');
+
+      if (error) {
+        console.log('Error in supa fetch for updating followers:\n', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Database (supabase) connection error.',
+        });
+      }
+      const followLists = data.map(async ({ fid, twitter_id }) => {
+        //return {
+        //  twitterFollowers,
+        //  farcasterFollowersFID
+        //}
+      });
+      console.log(followLists);
+
+      // const { updateResult, updateError} = await supabase
+      //   .from('directory')
+      //   .upsert([
+
+      //   ]);
+
+      return 'Updated followers';
     }),
 });
