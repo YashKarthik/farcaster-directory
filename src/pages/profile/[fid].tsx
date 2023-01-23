@@ -112,9 +112,9 @@ const Home: NextPage = () => {
                       className="mt-3 text-purple-400"
                       target="_blank"
                       rel="noreferrer"
-                      href={`https://phrasetown.com/cast/${queryBasicData.data[0].cast_link!.slice(85,)}`}
+                      href={`https://www.discove.xyz/threads/${queryBasicData.data[0].cast_link!.slice(85,)}/${queryBasicData.data[0].cast_link!.slice(85,)}/`}
                     >
-                      View cast in Phrasetown
+                      View cast in Discove.xyz
                     </a>
                   </div>
                 ):(
@@ -126,7 +126,7 @@ const Home: NextPage = () => {
                     <a 
                       className="mt-3 text-purple-400 pointer-events-none"
                     >
-                      View cast in Phrasetown
+                      View cast in Discove.xyz
                     </a>
                   </div>
                 )}
