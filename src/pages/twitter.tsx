@@ -76,6 +76,8 @@ const TwitterVerifyPage: NextPage = () => {
 
               <p className="font-semibold my-5 ">
                 After tweeting, press the verify button so I can go check the tweet.
+
+                THIS MAY NOT WORK DUE TO THE RECENT TWITTER API CHANGES.
               </p>
 
               <button 

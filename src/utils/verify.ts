@@ -14,7 +14,7 @@ type User = {
 }
 
 export const updateFollowers = async (fId: number, twitterID: number): Promise<{farcasterFollowersFID: number[], twitterFollowers: string[]}> => {
-  const fcFollowersRes = await fetch(`https://api.farcaster.xyz/v2/followers?fid=${fId}`, {
+  const fcFollowersRes = await fetch(`https://api.warpcast.com/v2/followers?fid=${fId}`, {
     headers: {
       'accept': 'application/json',
       'authorization': `Bearer ${env.FC_APPLICATION_BEARER_TOKEN}`
@@ -53,7 +53,7 @@ export const getUserData = async (
   twitterHandle: string,
   fName: string
 ): Promise<User> => {
-  const userRes = await fetch(`https://api.farcaster.xyz/v2/user-by-username?username=${fName}`, {
+  const userRes = await fetch(`https://api.warpcast.com/v2/user-by-username?username=${fName}`, {
     headers: {
       'accept': 'application/json',
       'authorization': `Bearer ${env.FC_APPLICATION_BEARER_TOKEN}`
@@ -68,7 +68,7 @@ export const getUserData = async (
   const fPfp: string = user.result.user.pfp.url;
   const fBio: string = user.result.user.profile.bio.text;
 
-  const custodyAddressRes = await fetch(`https://api.farcaster.xyz/v2/custody-address?fname=${fName}`, {
+  const custodyAddressRes = await fetch(`https://api.warpcast.com/v2/custody-address?fname=${fName}`, {
     headers: {
       'accept': 'application/json',
       'authorization': `Bearer ${env.FC_APPLICATION_BEARER_TOKEN}`
@@ -81,7 +81,7 @@ export const getUserData = async (
   const custodyAddressObj = await custodyAddressRes.json();
   const custodyAddress = custodyAddressObj.result.custodyAddress;
 
-  const connectedAddressRes = await fetch(`https://api.farcaster.xyz/v2/verifications?fid=${fId}`, {
+  const connectedAddressRes = await fetch(`https://api.warpcast.com/v2/verifications?fid=${fId}`, {
     headers: {
       'accept': 'application/json',
       'authorization': `Bearer ${env.FC_APPLICATION_BEARER_TOKEN}`
@@ -94,7 +94,7 @@ export const getUserData = async (
   const connectedAddressObj = await connectedAddressRes.json();
   const connectedAddresses: string[] = connectedAddressObj.result.verifications.map(({ address }:{ address: string;}) => address);
 
-  const fcFollowersRes = await fetch(`https://api.farcaster.xyz/v2/followers?fid=${fId}`, {
+  const fcFollowersRes = await fetch(`https://api.warpcast.com/v2/followers?fid=${fId}`, {
     headers: {
       'accept': 'application/json',
       'authorization': `Bearer ${env.FC_APPLICATION_BEARER_TOKEN}`
@@ -155,7 +155,7 @@ export const verifyOnFarcaster = async (
   const user = await getUserData(twitterHandle, fName);
   const cast = `@directory Verifying my Farcaster account. Farcaster: \"${fName}\" Twitter: \"${twitterHandle}\"`;
   const castHash = castLink.slice(85,);
-  const castCheckRes = await fetch(`https://api.farcaster.xyz/v2/cast?hash=${castHash}`, {
+  const castCheckRes = await fetch(`https://api.warpcast.com/v2/cast?hash=${castHash}`, {
     headers: {
       'accept': 'application/json',
       'authorization': `Bearer ${env.FC_APPLICATION_BEARER_TOKEN}`
